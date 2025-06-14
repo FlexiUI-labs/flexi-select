@@ -1,6 +1,15 @@
 {
-  "name": "library",
+  "name": "flexi-select",
   "version": "20.0.1",
+  "description": "Lightweight, customizable Angular select component with search, infinite scroll, single/multiple selection and full keyboard & ARIA support.",
+  "author": "Taner Saydam <tanersaydam@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "select",
+    "select2",
+    "filtering"
+  ],
   "peerDependencies": {
     "@angular/common": "^20.0.0",
     "@angular/core": "^20.0.0"
@@ -8,5 +17,12 @@
   "dependencies": {
     "tslib": "^2.8.1"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "repository": {
+    "url": "https://github.com/FlexiUI-labs/flexi-select"
+  },
+  "homepage": "https://stackblitz.com/edit/stackblitz-starters-c3dvmx7v",
+  "bugs": {
+    "url": "https://github.com/FlexiUI-labs/flexi-select/issues"
+  }
 }
