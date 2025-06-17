@@ -118,14 +118,15 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
       case "en": return "Select one";
       case "tr": return "Seçim yapınız";
       case "bg": return "Моля, изберете";
-      default: return "";
+      default: return "Select one";
     }
   }
 
   addPlaceholderToData() {
     const placeholder = { [this.value()]: null, [this.label()]: this.selectOne() };
     const data = this.data();
-    if (!data.some(item => item[this.value()] === null)) {
+    const placeholderItem = data.find(item => item === placeholder);
+    if (!placeholderItem && this.data().length > 0) {
       data.unshift(placeholder);
     }
   }

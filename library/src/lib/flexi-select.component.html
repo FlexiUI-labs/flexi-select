@@ -42,9 +42,11 @@
         >
         <ul class="flexi-select-ul" (scroll)="onScroll($event)" #flexiSelectUl>
             @for(item of filteredData(); track trackByFn()){
-                <li (click)="select(item)" [ngClass]="setLiClass(item, $index)">
-                    <span>{{item[label()]}}</span>
-                </li>
+                @if(item[label()]){
+                    <li (click)="select(item)" [ngClass]="setLiClass(item, $index)">
+                        <span>{{item[label()]}}</span>
+                    </li>
+                }
             }
             @empty {
             <li>

@@ -1,6 +1,6 @@
 {
   "name": "flexi-select",
-  "version": "20.0.1",
+  "version": "20.0.6",
   "description": "Lightweight, customizable Angular select component with search, infinite scroll, single/multiple selection and full keyboard & ARIA support.",
   "author": "Taner Saydam <tanersaydam@gmail.com>",
   "license": "MIT",
@@ -19,7 +19,7 @@
   },
   "sideEffects": false,
   "repository": {
-    "url": "https://github.com/FlexiUI-labs/flexi-select"
+    "url": "git+https://github.com/FlexiUI-labs/flexi-select.git"
   },
   "homepage": "https://stackblitz.com/edit/stackblitz-starters-c3dvmx7v",
   "bugs": {
