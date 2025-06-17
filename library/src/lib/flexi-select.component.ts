@@ -125,9 +125,13 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   addPlaceholderToData() {
     const placeholder = { [this.value()]: null, [this.label()]: this.selectOne() };
     const data = this.data();
-    const placeholderItem = data.find(item => item === placeholder);
-    if (!placeholderItem && this.data().length > 0) {
-      data.unshift(placeholder);
+
+    const exists = data.some(item =>
+      item[this.value()] === null && item[this.label()] === this.selectOne()
+    );
+
+    if (this.data().length > 0 && !exists) {
+        data.unshift(placeholder);
     }
   }
 
@@ -142,7 +146,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   selectInitialStateValue() {
     if (this.data().length > 0 && this.initialState) {
       if (this.multiple()) {
-        const list = [];
+        const list:any[] = [];
         for (const val of this.initialState) {
           const d = this.data().find(p => p[this.value()] === val);
           if (d) {

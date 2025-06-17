@@ -14,6 +14,24 @@ import { httpResource } from '@angular/common/http';
         label="fullName"
         value="id"
         />
+        <flexi-select
+        language="tr"
+        [data]="data()"
+        label="fullName"
+        value="id"
+        />
+        <flexi-select
+        language="tr"
+        [data]="data()"
+        label="fullName"
+        value="id"
+        />
+        <flexi-select
+        language="tr"
+        [data]="data()"
+        label="fullName"
+        value="id"
+        />
     </div>
   `
 })
