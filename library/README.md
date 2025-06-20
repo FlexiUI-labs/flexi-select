@@ -151,7 +151,78 @@ _In template:_
 </flexi-select>
 ```
 
+## Disabled State
+
+```html
+<flexi-select
+  [data]='users'
+  value='id'
+  label='name'
+  [disabled]='true'>
+</flexi-select>
+```
+
+- `[disabled]`: Makes the select non-interactive with visual styling
+- Automatically handles cursor, focus, and click events
+- Supports both light and dark themes
+
 ---
+
+## Form Validation
+
+### Basic Required Validation
+
+```html
+<form [formGroup]='myForm'>
+  <flexi-select
+    formControlName='country'
+    [data]='countries'
+    value='id'
+    label='name'
+    [required]='true'
+    [showValidationErrors]='true'
+    [customValidationMessage]='"Please select a country"'>
+  </flexi-select>
+</form>
+```
+
+### Multiple Selection with Min/Max Validation
+
+```html
+<flexi-select
+  formControlName='cities'
+  [data]='cities'
+  value='id'
+  label='name'
+  [multiple]='true'
+  [required]='true'
+  [minSelections]='2'
+  [maxSelections]='5'
+  [showValidationErrors]='true'
+  language='en'>
+</flexi-select>
+```
+
+**Validation features:**
+- Required field validation
+- Min/max selections for multiple mode
+- Custom validation messages
+- Built-in error display with proper ARIA attributes
+- Multi-language support (tr, en, bg)
+- Visual feedback with red borders and validation states
+
+---
+
+## Additional Inputs (Validation & State)
+
+| Input                      | Type      | Default     | Description                                    |
+|----------------------------|-----------|-------------|------------------------------------------------|
+| `disabled`                 | `boolean` | `false`     | Disable the select component                   |
+| `required`                 | `boolean` | `false`     | Mark field as required for validation          |
+| `minSelections`            | `number`  | `0`         | Minimum selections (multiple mode only)        |
+| `maxSelections`            | `number`  | `Infinity`  | Maximum selections (multiple mode only)        |
+| `showValidationErrors`     | `boolean` | `true`      | Display validation error messages              |
+| `customValidationMessage`  | `string`  | `""`        | Custom required field error message            |
 
 ## Inputs & Outputs
 

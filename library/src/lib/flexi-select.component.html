@@ -1,17 +1,29 @@
-<div class="flexi-select" (keypress)="onKeyPress($event)" (keydown)="onKeyDownForMainDiv($event)" [attr.data-bs-theme]="themeClass()" role="combobox" [attr.aria-expanded]="isOpen()" [attr.aria-owns]="uniqueName + '-listbox'" aria-haspopup="listbox">
+<div [ngClass]="getSelectContainerClass()"
+     (keypress)="onKeyPress($event)"
+     (keydown)="onKeyDownForMainDiv($event)"
+     [attr.data-bs-theme]="themeClass()" 
+     role="combobox"
+     [attr.aria-expanded]="isOpen()"
+     [attr.aria-owns]="uniqueName + '-listbox'"
+     aria-haspopup="listbox"
+     [attr.aria-disabled]="disabled()"
+     [attr.aria-invalid]="isTouched() && !isValid()" 
+     [attr.aria-describedby]="!isValid() && showValidationErrors() ? uniqueName() + '-error' : null"
+     aria-haspopup="listbox"
+    >
     <div class="flexi-select-div"
          #flexiSelectDiv
-         [ngStyle]="{'height': height(), 'cursor':'pointer'}"
+         [ngStyle]="{'height': height(), 'cursor': disabled() ? 'default' : 'pointer'}"
          [tabindex]="tabindex()"
-         (keydown.space)="$event.preventDefault(); this.isOpen.set(true)"
+         (keydown.space)="!disabled() && $event.preventDefault(); this.isOpen.set(true)"
          (focus)="onFocus()"
          (blur)="onBlur()"
          [attr.aria-controls]="uniqueName() + '-listbox'"
          [attr.aria-labelledby]="uniqueName() + '-label'"
-         (click)="toggleDropdown()">
+         (click)="!disabled() && toggleDropdown()">
         @if(!multiple()){
             <span id="{{uniqueName()}}-label">
-                {{selectedItem()[label()] === undefined ? selectOne() : selectedItem()[label()]}}
+                {{selectedItem()[label()] === undefined ? selectOneText() : selectedItem()[label()]}}
             </span>
         }@else {
             <div class="flexi-select-multiple-container">
@@ -19,6 +31,12 @@
                     <div class="flexi-select-multiple-value">
                         <span aria-hidden="true" class="flexi-select-multiple-value-icon-left" (click)="removeSelectedItemFromSelectedItems($index, item)">×</span>
                         <span class="flexi-select-multiple-value-label">{{item[label()]}}</span>
+                    </div>
+                }
+
+                @if(multiple() && isMaxSelectionReached()) {
+                    <div class="flexi-select-max-warning">
+                        <small>{{getMaxSelectionsMessage()}}</small>
                     </div>
                 }
             </div>
@@ -43,8 +61,13 @@
         <ul class="flexi-select-ul" (scroll)="onScroll($event)" #flexiSelectUl>
             @for(item of filteredData(); track trackByFn()){
                 @if(item[label()]){
-                    <li (click)="select(item)" [ngClass]="setLiClass(item, $index)">
+                    <li (click)="select(item)"
+                        [ngClass]="setLiClass(item, $index)"
+                        [class.flexi-select-li-disabled]="multiple() && !isItemSelectableInMultiple(item)">
                         <span>{{item[label()]}}</span>
+                        @if(multiple() && !isItemSelectableInMultiple(item)) {
+                            <small class="flexi-select-max-reached">({{maxLimitReachedText()}})</small>
+                        }
                     </li>
                 }
             }
@@ -55,4 +78,13 @@
             }
         </ul>
     </div>
+    @if(isTouched() && !isValid() && showValidationErrors()) {
+        <div class="flexi-select-validation-errors" [attr.id]="uniqueName() + '-error'" role="alert">
+            @for(error of validationErrors(); track error) {
+                <div class="flexi-select-validation-error">
+                    <small>{{error}}</small>
+                </div>
+            }
+        </div>
+    }
 </div>

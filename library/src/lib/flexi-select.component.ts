@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, ElementRef, HostListener, OnChanges, OnInit, QueryList, SimpleChanges, ViewChildren, ViewEncapsulation, forwardRef, inject, signal, viewChildren, output, input, viewChild, linkedSignal } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { AbstractControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors } from '@angular/forms';
 import { FlexiOptionComponent } from './flexi-option.component';
 import { NgClass, NgStyle } from '@angular/common';
 
@@ -14,6 +14,11 @@ import { NgClass, NgStyle } from '@angular/common';
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => FlexiSelectComponent),
+      multi: true
+    },
+    {
+      provide: NG_VALIDATORS,
       useExisting: forwardRef(() => FlexiSelectComponent),
       multi: true
     }
@@ -32,8 +37,19 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   readonly closeAfterSelect = input<boolean>(false);
   readonly height = input<string>("100%");
   readonly tabindex = input<number>(0);
+  readonly disabled = input<boolean>(false);
+
+  readonly required = input<boolean>(false);
+  readonly minSelections = input<number>(0);
+  readonly maxSelections = input<number>(Infinity);
+  readonly showValidationErrors = input<boolean>(true);
+  readonly customValidationMessage = input<string>("");
 
   readonly selected = output<any>({ alias: 'selected' });
+
+  readonly isValid = signal<boolean>(true);
+  readonly validationErrors = signal<string[]>([]);
+  readonly isTouched = signal<boolean>(false);
 
   @ContentChildren(forwardRef(() => FlexiOptionComponent)) options!: QueryList<FlexiOptionComponent>;
 
@@ -60,7 +76,8 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   readonly valueSignal = linkedSignal(() => this.value());
   readonly clientHeightSignal = linkedSignal(() => this.clientHeight());
   readonly noData = linkedSignal<string>(() => this.translateNoData());
-  readonly selectOne = linkedSignal<string>(() => this.translateSelectOne());
+  readonly selectOneText = linkedSignal<string>(() => this.translateSelectOne());
+  readonly maxLimitReachedText = linkedSignal<string>(() => this.translateMaxLimitReached());
 
   readonly #cdr = inject(ChangeDetectorRef);
   readonly #elementRef = inject(ElementRef);
@@ -68,12 +85,14 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["data"] && changes["data"].currentValue) {
       this.dataSignal.set([...changes["data"].currentValue]);
-      this.addPlaceholderToData();
+      if(!this.multiple()){
+        this.addPlaceholderToData();
+      }
     }
 
-    if (changes["language"]){
+    if (changes["language"]) {
       this.noData.set(this.translateNoData());
-      this.selectOne.set(this.translateSelectOne());
+      this.selectOneText.set(this.translateSelectOne());
     }
 
     this.filteredData.set(this.data().slice(0, this.itemsPerPage()));
@@ -104,7 +123,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
     });
   }
 
-  translateNoData(){
+  translateNoData() {
     switch (this.language()) {
       case "en": return "No records found";
       case "tr": return "Kayıt bulunamadı";
@@ -113,7 +132,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
     }
   }
 
-  translateSelectOne(){
+  translateSelectOne() {
     switch (this.language()) {
       case "en": return "Select one";
       case "tr": return "Seçim yapınız";
@@ -122,16 +141,25 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
     }
   }
 
+  translateMaxLimitReached(){
+    switch (this.language()) {
+      case "en": return "Max limit reached";
+      case "tr": return "Maksimum seçime ulaştınız";
+      case "bg": return "Достигнахте максималния брой избори";
+      default: return "Max limit reached";
+    }
+  }
+
   addPlaceholderToData() {
-    const placeholder = { [this.value()]: null, [this.label()]: this.selectOne() };
+    const placeholder = { [this.value()]: null, [this.label()]: this.selectOneText() };
     const data = this.data();
 
     const exists = data.some(item =>
-      item[this.value()] === null && item[this.label()] === this.selectOne()
+      item[this.value()] === null && item[this.label()] === this.selectOneText()
     );
 
     if (this.data().length > 0 && !exists) {
-        data.unshift(placeholder);
+      data.unshift(placeholder);
     }
   }
 
@@ -146,7 +174,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   selectInitialStateValue() {
     if (this.data().length > 0 && this.initialState) {
       if (this.multiple()) {
-        const list:any[] = [];
+        const list: any[] = [];
         for (const val of this.initialState) {
           const d = this.data().find(p => p[this.value()] === val);
           if (d) {
@@ -213,7 +241,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
         this.selectFirstOne();
       }
     } catch (error) {
-      const filtered:any[] = [];
+      const filtered: any[] = [];
       this.filteredData.set(filtered);
     }
   }
@@ -235,17 +263,100 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
     return classes;
   }
 
-  onFocus() { //odaklandığında
-    /* if(!this.closedAfterSelect()){
-      this.isOpen.set(true);
-      setTimeout(() => {
-        this.searchInput?.nativeElement.focus();
-      }, 100);
-    } */
+  validate(control: AbstractControl): ValidationErrors | null {
+    if (this.disabled()) {
+      return null; // Disabled ise validation yapma
+    }
+
+    const errors: ValidationErrors = {};
+    const value = control.value;
+
+    // Required validation
+    if (this.required()) {
+      if (this.multiple()) {
+        if (!value || !Array.isArray(value) || value.length === 0) {
+          errors['required'] = { message: this.getRequiredMessage() };
+        }
+      } else {
+        if (!value || value === null || value === undefined || value === '') {
+          errors['required'] = { message: this.getRequiredMessage() };
+        }
+      }
+    }
+
+    // Multiple selection validations
+    if (this.multiple() && value && Array.isArray(value)) {
+      // Min selections
+      if (this.minSelections() > 0 && value.length < this.minSelections()) {
+        errors['minSelections'] = {
+          message: this.getMinSelectionsMessage(),
+          requiredSelections: this.minSelections(),
+          actualSelections: value.length
+        };
+      }
+
+      // Max selections
+      if (this.maxSelections() !== Infinity && value.length > this.maxSelections()) {
+        errors['maxSelections'] = {
+          message: this.getMaxSelectionsMessage(),
+          maxSelections: this.maxSelections(),
+          actualSelections: value.length
+        };
+      }
+    }
+
+    // Update validation state
+    const isValid = Object.keys(errors).length === 0;
+    this.isValid.set(isValid);
+
+    if (!isValid) {
+      const errorMessages = Object.values(errors).map((error: any) => error.message);
+      this.validationErrors.set(errorMessages);
+    } else {
+      this.validationErrors.set([]);
+    }
+
+    return Object.keys(errors).length > 0 ? errors : null;
   }
 
-  onBlur() { //odağı kaybettiğinde
+  // Validation mesajları
+  getRequiredMessage(): string {
+    if (this.customValidationMessage()) {
+      return this.customValidationMessage();
+    }
+
+    switch (this.language()) {
+      case "tr": return "Bu alan zorunludur";
+      case "en": return "This field is required";
+      case "bg": return "Това поле е задължително";
+      default: return "This field is required";
+    }
+  }
+
+  getMinSelectionsMessage(): string {
+    switch (this.language()) {
+      case "tr": return `En az ${this.minSelections()} seçim yapmalısınız`;
+      case "en": return `You must select at least ${this.minSelections()} item(s)`;
+      case "bg": return `Трябва да изберете поне ${this.minSelections()} елемент(а)`;
+      default: return `You must select at least ${this.minSelections()} item(s)`;
+    }
+  }
+
+  getMaxSelectionsMessage(): string {
+    switch (this.language()) {
+      case "tr": return `En fazla ${this.maxSelections()} seçim yapabilirsiniz`;
+      case "en": return `You can select maximum ${this.maxSelections()} item(s)`;
+      case "bg": return `Можете да изберете максимум ${this.maxSelections()} елемент(а)`;
+      default: return `You can select maximum ${this.maxSelections()} item(s)`;
+    }
+  }
+
+  onFocus() { }
+
+  onBlur() {
+    this.isTouched.set(true);
     this.closedAfterSelect.set(false);
+    this.onTouched();
   }
 
   onKeyPress(event: KeyboardEvent) {
@@ -272,6 +383,10 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   }
 
   handleAlphabeticInput(char: string) {
+    if (this.disabled()) {
+      return;
+    }
+
     if (!this.isOpen()) {
       this.isOpen.set(true);
       setTimeout(() => {
@@ -285,6 +400,9 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   }
 
   toggleDropdown() {
+    if (this.disabled()) {
+      return;
+    }
     this.isOpen.set(!this.isOpen());
 
     if (this.isOpen()) {
@@ -296,6 +414,10 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   }
 
   onKeyDownForMainDiv(event: KeyboardEvent) {
+    if (this.disabled()) {
+      return;
+    }
+
     if (event.key === 'ArrowDown') {
       if (!this.isOpen()) {
         this.toggleDropdown();
@@ -406,6 +528,11 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   }
 
   selectForMultiple(item: any) {
+    if (!this.isItemSelectableInMultiple(item)) {
+      // Max limite ulaşıldı ve item seçili değilse, yeni seçim yapılmasın
+      return;
+    }
+
     const selectedItem = {
       [this.label()]: item[this.label()],
       [this.value()]: item[this.value()]
@@ -502,5 +629,49 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
     this.isOpen.set(true);
 
     this.scrollDown();
+  }
+
+  getSelectContainerClass(): string {
+    let classes = "flexi-select";
+
+    if (this.disabled()) {
+      classes += " flexi-select-disabled";
+    }
+
+    if (this.isTouched() && !this.isValid() && this.showValidationErrors()) {
+      classes += " flexi-select-invalid";
+    }
+
+    return classes;
+  }
+
+  hasMaxSelectionLimit(): boolean {
+    return this.maxSelections() !== Infinity && this.maxSelections() > 0;
+  }
+
+  isMaxSelectionReached(): boolean {
+    return this.hasMaxSelectionLimit() && this.selectedItems().length >= this.maxSelections();
+  }
+
+  canSelectMoreItems(): boolean {
+    return !this.hasMaxSelectionLimit() || this.selectedItems().length < this.maxSelections();
+  }
+
+  isItemSelectableInMultiple(item: any): boolean {
+    if (!this.multiple()) return true;
+
+    // Zaten seçili olan item'lar her zaman tıklanabilir (remove için)
+    const isAlreadySelected = this.selectedItems().some(selected => selected[this.value()] === item[this.value()]);
+    if (isAlreadySelected) return true;
+
+    // Max limite ulaşılmışsa yeni seçim yapılamaz
+    return this.canSelectMoreItems();
+  }
+
+  // Validation durumunu manuel olarak sıfırlama
+  resetValidation() {
+    this.isTouched.set(false);
+    this.isValid.set(true);
+    this.validationErrors.set([]);
   }
 }

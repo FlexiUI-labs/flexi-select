@@ -8,6 +8,8 @@
     --flexi-success: #47D764;
     --flexi-select: #ebf5ff;
     --flexi-select-multiple-value-text: #212529;
+    --flexi-select-disabled-bg: #f5f5f5;
+    --flexi-select-disabled-border-color: #dee2e6;
 }
 
 [data-bs-theme="dark"] {
@@ -20,6 +22,8 @@
     --flexi-success: #47D764;
     --flexi-select: #ebf5ff;
     --flexi-select-multiple-value-text: #212529;
+    --flexi-select-disabled-bg: #212529e7;
+    --flexi-select-disabled-border-color: #212529e7;
 }
 
 .flexi-highlighted {
@@ -143,4 +147,114 @@
 
 .flexi-select-multiple-value-icon-left {
     cursor: pointer;
+}
+
+.flexi-select-disabled {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.flexi-select-disabled .flexi-select-div {
+  cursor: not-allowed !important;
+  background-color: var(--flexi-select-disabled-bg);
+  border-color: var(--flexi-select-disabled-border-color);
+}
+
+.flexi-select-disabled .flexi-select-multiple-value-icon-left {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.flexi-select-disabled .flexi-select-multiple-value {
+  background-color: #f8f9fa !important;
+  color: #6c757d !important;
+  border-color: #dee2e6 !important;
+}
+
+[data-bs-theme="dark"] .flexi-select-disabled .flexi-select-multiple-value {
+  background-color: #495057 !important;
+  color: #adb5bd !important;
+  border-color: #6c757d !important;
+}
+
+.flexi-select-disabled .flexi-select-multiple-value-icon-left {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: default;
+}
+
+.flexi-select-disabled .flexi-select-div-svg {
+  opacity: 0.5;
+}
+
+/* Validation stiller */
+.flexi-select-invalid .flexi-select-div {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+[data-bs-theme="dark"] .flexi-select-invalid .flexi-select-div {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.flexi-select-validation-errors {
+  margin-top: 0.25rem;
+}
+
+.flexi-select-validation-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+[data-bs-theme="dark"] .flexi-select-validation-error {
+  color: #f5c6cb;
+}
+
+/* Max selection uyarıları */
+.flexi-select-max-warning {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  margin: 0.25rem;
+  color: #856404;
+}
+
+[data-bs-theme="dark"] .flexi-select-max-warning {
+  background-color: #664d03;
+  border-color: #997404;
+  color: #ffda6a;
+}
+
+.flexi-select-li-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.flexi-select-max-reached {
+  color: #6c757d;
+  font-style: italic;
+  margin-left: auto;
+}
+
+[data-bs-theme="dark"] .flexi-select-max-reached {
+  color: #adb5bd;
+}
+
+/* Validation için focus durumu */
+.flexi-select-invalid .flexi-select-div:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Success durumu (opsiyonel) */
+.flexi-select-valid .flexi-select-div {
+  border-color: #198754;
+}
+
+[data-bs-theme="dark"] .flexi-select-valid .flexi-select-div {
+  border-color: #198754;
 }
