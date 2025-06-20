@@ -67,6 +67,7 @@ export class AppModule {}
 ```html
 <flexi-select
   [data]='users'
+  [loading]='loading'
   value='id'
   label='name'
   (selected)='onUserSelected($event)'>
@@ -85,6 +86,7 @@ export class AppModule {}
 ```html
 <flexi-select
   [data]='tags'
+  [loading]='loading'
   value='tagId'
   label='tagName'
   [multiple]='true'
@@ -121,11 +123,13 @@ Child `<flexi-option>` elements auto-generate the `data` array.
 
 ```html
 <flexi-select
+  [data]='cities'
+  [loading]='loading'
+  value='id'
+  label='name'
   [(ngModel)]='selectedId'
   name='selectedId'
-  [data]='cities'
-  value='id'
-  label='name'>
+  >
 </flexi-select>
 ```
 
@@ -143,11 +147,13 @@ _In template:_
 
 ```html
 <flexi-select
+  [data]='countries'
+  [loading]='loading'
+  value='iso'
+  label='name'
   formControlName='country'
   name='country'
-  [data]='countries'
-  value='iso'
-  label='name'>
+  >
 </flexi-select>
 ```
 
@@ -156,6 +162,7 @@ _In template:_
 ```html
 <flexi-select
   [data]='users'
+  [loading]='loading'
   value='id'
   label='name'
   [disabled]='true'>
@@ -175,8 +182,9 @@ _In template:_
 ```html
 <form [formGroup]='myForm'>
   <flexi-select
-    formControlName='country'
     [data]='countries'
+    [loading]='loading'
+    formControlName='country'
     value='id'
     label='name'
     [required]='true'
@@ -190,8 +198,9 @@ _In template:_
 
 ```html
 <flexi-select
-  formControlName='cities'
   [data]='cities'
+  [loading]='loading'
+  formControlName='cities'
   value='id'
   label='name'
   [multiple]='true'
@@ -237,9 +246,11 @@ _In template:_
 | `clientHeight`         | `number`                   | `180`      | Scrollable list height (px)                 |
 | `height`               | `string`                   | `100%`     | Height of the main select box               |
 | `tabindex`             | `number`                   | `0`        | `tabindex` for focus                        |
-| `themeClass`           | `'light' \| 'dark'`         | `'light'`  | Theme via CSS variable                      |
-| `language`             | `'tr' \| 'en' \| 'bg'`      | `'en'`     | Locale for search lower-casing              |
+| `themeClass`           | `'light' \| 'dark'`        | `'light'`  | Theme via CSS variable                      |
+| `language`             | `'tr' \| 'en' \| 'bg'`     | `'en'`     | Locale for search lower-casing              |
 | `name`                 | `string`                   | auto-gen   | Unique name/id for ARIA & forms             |
+| `loading`              | `boolean`                  | `false`    | loading                                     |
+
 
 | Output                 | Type                       | Description                                 |
 |------------------------|----------------------------|---------------------------------------------|

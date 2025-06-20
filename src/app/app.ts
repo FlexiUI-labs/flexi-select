@@ -16,16 +16,16 @@ import { FormsModule, NgForm } from '@angular/forms';
         ngModel
         name="city"
         label="fullName"
-        [multiple]="true"
+        [multiple]="false"
         value="id"
         [disabled]="false"
         themeClass="light"
-        [required]="true"
-        [customValidationMessage]="'Lütfen bir ülke seçiniz'"
+        [required]="false"
         [showValidationErrors]="true"
-        [maxSelections]="3"
+        [loading]="loading()"
+        (selected)="selected($event)"
         />
-      <button>Submit</button>
+      <button style="margin-top: 20px;">Submit</button>
       </form>
         <!-- <flexi-select
         language="tr"
@@ -53,9 +53,15 @@ export class App {
   readonly result = httpResource<any[]>(() => "/data.json");
 
   readonly data = computed(() => this.result.value() ?? []);
+  readonly loading = computed(() => this.result.isLoading());
 
   send(form:NgForm){
     console.log(form);
+    
+  }
+
+  selected(data:any){
+    console.log(data);
     
   }
 }

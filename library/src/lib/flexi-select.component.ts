@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, ElementRef, HostListener, OnChanges, OnInit, QueryList, SimpleChanges, ViewChildren, ViewEncapsulation, forwardRef, inject, signal, viewChildren, output, input, viewChild, linkedSignal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, ElementRef, HostListener, OnChanges, OnInit, QueryList, SimpleChanges, ViewChildren, ViewEncapsulation, forwardRef, inject, signal, viewChildren, output, input, viewChild, linkedSignal, computed } from '@angular/core';
 import { AbstractControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors } from '@angular/forms';
 import { FlexiOptionComponent } from './flexi-option.component';
 import { NgClass, NgStyle } from '@angular/common';
@@ -38,6 +38,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   readonly height = input<string>("100%");
   readonly tabindex = input<number>(0);
   readonly disabled = input<boolean>(false);
+  readonly loading = input<boolean>(false);
 
   readonly required = input<boolean>(false);
   readonly minSelections = input<number>(0);
@@ -77,7 +78,9 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   readonly clientHeightSignal = linkedSignal(() => this.clientHeight());
   readonly noData = linkedSignal<string>(() => this.translateNoData());
   readonly selectOneText = linkedSignal<string>(() => this.translateSelectOne());
-  readonly maxLimitReachedText = linkedSignal<string>(() => this.translateMaxLimitReached());
+  readonly maxLimitReachedText = computed<string>(() => this.translateMaxLimitReached());
+  readonly noSelectionText = computed<string>(() => this.noSelection());
+  readonly loadingText = computed<string>(() => this.loadingTextMethod());
 
   readonly #cdr = inject(ChangeDetectorRef);
   readonly #elementRef = inject(ElementRef);
@@ -85,7 +88,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["data"] && changes["data"].currentValue) {
       this.dataSignal.set([...changes["data"].currentValue]);
-      if(!this.multiple()){
+      if (!this.multiple()) {
         this.addPlaceholderToData();
       }
     }
@@ -141,12 +144,30 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
     }
   }
 
-  translateMaxLimitReached(){
+  translateMaxLimitReached() {
     switch (this.language()) {
       case "en": return "Max limit reached";
       case "tr": return "Maksimum seçime ulaştınız";
       case "bg": return "Достигнахте максималния брой избори";
       default: return "Max limit reached";
+    }
+  }
+
+  noSelection() {
+    switch (this.language()) {
+      case "en": return "No selection";
+      case "tr": return "Seçim yapılmamış";
+      case "bg": return "Няма избор";
+      default: return "No selection";
+    }
+  }
+
+  loadingTextMethod() {
+    switch (this.language()) {
+      case "en": return "Loading";
+      case "tr": return "Yükleniyor";
+      case "bg": return "Зарежда се";
+      default: return "Loading";
     }
   }
 
@@ -257,7 +278,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
         classes += " flexi-active";
       }
     }
-    if (index === this.currentHighlightIndex()) {
+    if (index === this.currentHighlightIndex() && !this.multiple()) {
       classes += " flexi-highlighted";
     }
     return classes;
