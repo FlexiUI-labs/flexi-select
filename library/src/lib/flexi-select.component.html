@@ -1,13 +1,13 @@
 <div [ngClass]="getSelectContainerClass()"
      (keypress)="onKeyPress($event)"
      (keydown)="onKeyDownForMainDiv($event)"
-     [attr.data-bs-theme]="themeClass()" 
+     [attr.data-bs-theme]="themeClass()"
      role="combobox"
      [attr.aria-expanded]="isOpen()"
      [attr.aria-owns]="uniqueName + '-listbox'"
      aria-haspopup="listbox"
      [attr.aria-disabled]="disabled()"
-     [attr.aria-invalid]="isTouched() && !isValid()" 
+     [attr.aria-invalid]="isTouched() && !isValid()"
      [attr.aria-describedby]="!isValid() && showValidationErrors() ? uniqueName() + '-error' : null"
      aria-haspopup="listbox"
     >
@@ -84,13 +84,13 @@
             }
         </ul>
     </div>
-    @if(isTouched() && !isValid() && showValidationErrors()) {
-        <div class="flexi-select-validation-errors" [attr.id]="uniqueName() + '-error'" role="alert">
-            @for(error of validationErrors(); track error) {
-                <div class="flexi-select-validation-error">
-                    <small>{{error}}</small>
-                </div>
-            }
-        </div>
-    }
 </div>
+@if(isTouched() && !isValid() && showValidationErrors() && showValidationErrorMessages()) {
+    <div class="flexi-select-validation-errors" [attr.id]="uniqueName() + '-error'" role="alert">
+        @for(error of validationErrors(); track error) {
+            <div class="flexi-select-validation-error">
+                <small>{{error}}</small>
+            </div>
+        }
+    </div>
+}

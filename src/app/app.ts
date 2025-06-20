@@ -20,7 +20,7 @@ import { FormsModule, NgForm } from '@angular/forms';
         value="id"
         [disabled]="false"
         themeClass="light"
-        [required]="false"
+        [required]="true"
         [showValidationErrors]="true"
         [loading]="loading()"
         (selected)="selected($event)"

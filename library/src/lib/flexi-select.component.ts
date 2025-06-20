@@ -44,6 +44,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   readonly minSelections = input<number>(0);
   readonly maxSelections = input<number>(Infinity);
   readonly showValidationErrors = input<boolean>(true);
+  readonly showValidationErrorMessages = input<boolean>(true);
   readonly customValidationMessage = input<string>("");
 
   readonly selected = output<any>({ alias: 'selected' });
