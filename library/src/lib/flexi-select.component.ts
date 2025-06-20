@@ -479,6 +479,10 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
         this.moveToNextElement();
       }
     } else if (event.key === 'Tab') {
+      const item = this.filteredData()[this.currentHighlightIndex()];
+      if (item) {
+        this.select(item);
+      }
       this.moveToNextElement();
       this.isOpen.set(false);
     }
