@@ -173,11 +173,13 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   }
 
   addPlaceholderToData() {
-    const placeholder = { [this.value()]: null, [this.label()]: this.selectOneText() };
+    const placeholder = this.label() ? { [this.value()]: null, [this.label()]: this.selectOneText() } : this.selectOneText();
     const data = this.data();
 
     const exists = data.some(item =>
-      item[this.value()] === null && item[this.label()] === this.selectOneText()
+      this.label() 
+        ? item[this.value()] === null && item[this.label()] === this.selectOneText()
+        : item === this.selectOneText()
     );
 
     if (this.data().length > 0 && !exists) {
@@ -256,7 +258,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   search() {
     try {
       const val = this.searchInput()!.nativeElement.value.toString().toLocaleLowerCase("tr");
-      const filtered = this.data().filter(p => p[this.label()].toString().toLocaleLowerCase("tr").includes(val)).slice(0, this.itemsPerPage());
+      const filtered = this.data().filter(p => (this.label() ? p[this.label()] : p).toString().toLocaleLowerCase("tr").includes(val)).slice(0, this.itemsPerPage());
       this.filteredData.set(filtered);
       this.currentHighlightIndex.set(0);
       if (!this.multiple()) {
@@ -271,11 +273,11 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   setLiClass(item: any, index: number) {
     let classes = "flexi-select-li";
     if (this.multiple()) {
-      if (this.selectedItems().some(selected => selected[this.value()] === item[this.value()])) {
+      if (this.selectedItems().some(selected => this.value() ? (selected[this.value()] === item[this.value()]) : selected === item)) {
         classes += " flexi-active";
       }
     } else {
-      if (this.selectedItem() && item[this.value()] === this.selectedItem()[this.value()]) {
+      if (this.selectedItem() && this.value() ? (item[this.value()] === this.selectedItem()[this.value()]) : item === this.selectedItem()) {
         classes += " flexi-active";
       }
     }
@@ -592,9 +594,12 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
     this.isOpen.set(false);
     this.closedAfterSelect.set(false);
 
-    const value = this.value();
-    this.selected.emit(item[value]);
-    this.onChange(item[value]);
+    let value = this.value() ? item[this.value()] : item;
+    if(value === this.selectOneText()){
+      value = null
+    }
+    this.selected.emit(value);
+    this.onChange(value);
     this.searchInput()!.nativeElement.select();
   }
 

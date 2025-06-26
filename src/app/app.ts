@@ -1,4 +1,4 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 
 import { FlexiSelectModule } from '../../library/src/lib/flexi-select.module'
 import { httpResource } from '@angular/common/http';
@@ -13,7 +13,7 @@ import { FormsModule, NgForm } from '@angular/forms';
         <flexi-select
         language="tr"
         [data]="data()"
-        ngModel
+        [(ngModel)]="city"
         name="city"
         label="fullName"
         [multiple]="false"
@@ -25,6 +25,14 @@ import { FormsModule, NgForm } from '@angular/forms';
         [loading]="loading()"
         (selected)="selected($event)"
         />
+      <flexi-select 
+      [data]="names()"
+      (selected)="selected($event)"
+      [required]="true"
+      [showValidationErrors]="true"
+      [(ngModel)]="name"
+      name="test"
+      />
       <button style="margin-top: 20px;">Submit</button>
       </form>
         <!-- <flexi-select
@@ -55,8 +63,16 @@ export class App {
   readonly data = computed(() => this.result.value() ?? []);
   readonly loading = computed(() => this.result.isLoading());
 
+  readonly names = signal<string[]>(["Taner","Tugay","Toprak"]);
+  readonly name = signal<string>("");
+  readonly city = signal<string>("");
+
   send(form:NgForm){
     console.log(form);
+    console.log("name: " + this.name());
+    console.log("city " + this.city());
+    
+    
     
   }
 

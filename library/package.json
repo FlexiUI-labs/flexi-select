@@ -1,6 +1,6 @@
 {
   "name": "flexi-select",
-  "version": "20.0.12",
+  "version": "20.0.13",
   "description": "Lightweight, customizable Angular select component with search, infinite scroll, single/multiple selection and full keyboard & ARIA support.",
   "author": "Taner Saydam <tanersaydam@gmail.com>",
   "license": "MIT",

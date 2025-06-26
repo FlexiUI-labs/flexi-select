@@ -27,14 +27,14 @@
          }@else {
              @if(!multiple()){
                  <span id="{{uniqueName()}}-label">
-                     {{selectedItem()[label()] === undefined ? selectOneText() : selectedItem()[label()]}}
+                     {{label() ? selectedItem()[label()] === undefined ? selectOneText() : selectedItem()[label()] : (selectedItem() === undefined ? selectOneText() : selectedItem())}}
                  </span>
              }@else {
                  <div class="flexi-select-multiple-container">
                      @for(item of selectedItems();track item){
                          <div class="flexi-select-multiple-value">
                              <span aria-hidden="true" class="flexi-select-multiple-value-icon-left" (click)="removeSelectedItemFromSelectedItems($index, item)">×</span>
-                             <span class="flexi-select-multiple-value-label">{{item[label()]}}</span>
+                             <span class="flexi-select-multiple-value-label">{{label() ? item[label()] : item}}</span>
                          </div>
                      }@empty{
                          <span>{{noSelectionText()}}</span>
@@ -66,11 +66,11 @@
         >
         <ul class="flexi-select-ul" (scroll)="onScroll($event)" #flexiSelectUl>
             @for(item of filteredData(); track trackByFn()){
-                @if(item[label()]){
+                @if(label() ? item[label()] : item){
                     <li (click)="select(item)"
                         [ngClass]="setLiClass(item, $index)"
                         [class.flexi-select-li-disabled]="multiple() && !isItemSelectableInMultiple(item)">
-                        <span>{{item[label()]}}</span>
+                        <span>{{label() ? item[label()] : item}}</span>
                         @if(multiple() && !isItemSelectableInMultiple(item)) {
                             <small class="flexi-select-max-reached">({{maxLimitReachedText()}})</small>
                         }

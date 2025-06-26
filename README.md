@@ -73,10 +73,19 @@ export class AppModule {}
   (selected)='onUserSelected($event)'>
 </flexi-select>
 ```
-
-- `data`: array of items
+- `data`: array of items (object[])
 - `value`: property key for option value
 - `label`: property key for display text
+- `(selected)`: emits the selected `value`
+
+```html
+<flexi-select
+  [data]='users'
+  [loading]='loading'
+  (selected)='onUserSelected($event)'>
+</flexi-select>
+```
+- `data`: array of items (string[], number[], boolean[] etc.)
 - `(selected)`: emits the selected `value`
 
 ---
