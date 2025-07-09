@@ -47,9 +47,6 @@
 }
 
 .flexi-select-div-svg {
-  position: absolute;
-  top: 6px;
-  right: 10px;
   fill: var(--flexi-select-text-color);
   width: 10px;
 }
@@ -62,10 +59,9 @@
 .flexi-select-div {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: calc(1.47em + 1.3rem + 2px);
   padding: 0.5rem 0.875rem;
-  font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.47;
   color: var(--flexi-select-text-color);
@@ -261,7 +257,6 @@
 }
 
 .flexi-select-spinner {
-  position: absolute;
   top: 6px;
   right: 10px;
   width: 24px;

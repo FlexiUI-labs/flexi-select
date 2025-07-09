@@ -249,6 +249,7 @@ _In template:_
 | `data`                 | `any[]`                    | `[]`       | Options data                                |
 | `value`                | `string`                   | —          | Key for option value                        |
 | `label`                | `string`                   | —          | Key for option display text                 |
+| `fontSize`             | `string`                   | `13px`     | Font size for all text                      |
 | `multiple`             | `boolean`                  | `false`    | Enable multiple selection                   |
 | `closeAfterSelect`     | `boolean`                  | `false`    | Close on each select in multi-mode          |
 | `itemsPerPage`         | `number`                   | `30`       | Page size for infinite scroll               |

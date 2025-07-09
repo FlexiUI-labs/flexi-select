@@ -10,7 +10,7 @@ import { FormsModule, NgForm } from '@angular/forms';
   template: `
     <div style="width: 400px; margin:30px">
       <form #myForm="ngForm" (ngSubmit)="send(myForm)">
-        <flexi-select
+        <!-- <flexi-select
         language="tr"
         [data]="data()"
         [(ngModel)]="city"
@@ -24,7 +24,7 @@ import { FormsModule, NgForm } from '@angular/forms';
         [showValidationErrors]="true"
         [loading]="loading()"
         (selected)="selected($event)"
-        />
+        /> -->
       <flexi-select 
       [data]="names()"
       (selected)="selected($event)"
@@ -32,6 +32,9 @@ import { FormsModule, NgForm } from '@angular/forms';
       [showValidationErrors]="true"
       [(ngModel)]="name"
       name="test"
+      fontSize="14px"
+      [loading]="false"
+      language="tr"
       />
       <button style="margin-top: 20px;">Submit</button>
       </form>

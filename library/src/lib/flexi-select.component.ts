@@ -39,6 +39,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   readonly tabindex = input<number>(0);
   readonly disabled = input<boolean>(false);
   readonly loading = input<boolean>(false);
+  readonly fontSize = input<string>("13px");
 
   readonly required = input<boolean>(false);
   readonly minSelections = input<number>(0);

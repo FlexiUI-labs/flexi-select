@@ -13,7 +13,7 @@
     >
     <div class="flexi-select-div"
          #flexiSelectDiv
-         [ngStyle]="{'height': height(), 'cursor': disabled() ? 'default' : 'pointer'}"
+         [ngStyle]="{'height': height(), 'cursor': disabled() ? 'default' : 'pointer', fontSize: fontSize()}"
          [tabindex]="tabindex()"
          (keydown.space)="!disabled() && $event.preventDefault(); this.isOpen.set(true)"
          (focus)="onFocus()"
@@ -22,7 +22,7 @@
          [attr.aria-labelledby]="uniqueName() + '-label'"
          (click)="!disabled() && toggleDropdown()">
          @if(loading()){
-            <span>{{loadingText()}}</span>
+            <span [ngStyle]="{fontSize: fontSize()}">{{loadingText()}}</span>
             <div class="flexi-select-spinner"></div>
          }@else {
              @if(!multiple()){
@@ -56,6 +56,7 @@
         <input
           #searchInput
           class="flexi-select-search-input"
+          [ngStyle]="{fontSize: fontSize()}"
           (input)="search()"
           (keydown)="onKeyDown($event)"
           type="search"
@@ -70,7 +71,7 @@
                     <li (click)="select(item)"
                         [ngClass]="setLiClass(item, $index)"
                         [class.flexi-select-li-disabled]="multiple() && !isItemSelectableInMultiple(item)">
-                        <span>{{label() ? item[label()] : item}}</span>
+                        <span [ngStyle]="{fontSize: fontSize()}">{{label() ? item[label()] : item}}</span>
                         @if(multiple() && !isItemSelectableInMultiple(item)) {
                             <small class="flexi-select-max-reached">({{maxLimitReachedText()}})</small>
                         }
@@ -79,7 +80,7 @@
             }
             @empty {
             <li>
-                <span>{{noData()}}</span>
+                <span [ngStyle]="{fontSize: fontSize()}">{{noData()}}</span>
             </li>
             }
         </ul>
