@@ -68,6 +68,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   readonly filteredData = signal<any[]>([]);
   readonly selectedItem = signal<any>({});
   readonly selectedItems = signal<any[]>([]);
+  readonly modelValue = signal<any>(null);
   readonly isOpen = signal<boolean>(false);
   initialState: any;
   readonly uniqueName = signal<string>("");
@@ -102,7 +103,9 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
 
     this.filteredData.set(this.data().slice(0, this.itemsPerPage()));
     this.currentHighlightIndex.set(0);
-    this.selectFirstOne();
+    if (!this.multiple()) {
+      this.selectFirstOne();
+    }
     this.selectInitialStateValue();
     this.#cdr.detectChanges();
   }
@@ -197,10 +200,14 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   }
 
   selectInitialStateValue() {
-    if (this.data().length > 0 && this.initialState) {
+    const modelValue = this.modelValue();
+    const valueToSelect = this.initialState ?? modelValue;
+
+    if (this.data().length > 0 && valueToSelect !== null && valueToSelect !== undefined && valueToSelect !== '') {
       if (this.multiple()) {
         const list: any[] = [];
-        for (const val of this.initialState) {
+        const values = Array.isArray(valueToSelect) ? valueToSelect : [valueToSelect];
+        for (const val of values) {
           const d = this.data().find(p => p[this.value()] === val);
           if (d) {
             const item = {
@@ -213,7 +220,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
         this.selectedItems.set(list);
         this.initialState = undefined;
       } else {
-        const val = this.data().find(p => p[this.value()] === this.initialState);
+        const val = this.data().find(p => p[this.value()] === valueToSelect);
         if (val) {
           this.selectedItem.set({ [this.label()]: val[this.label()], [this.value()]: val[this.value()] });
           this.initialState = undefined;
@@ -585,6 +592,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
 
     const selectedItemsForNgModel = this.selectedItems().map(val => val[this.value()]);
     this.selected.emit(selectedItemsForNgModel);
+    this.modelValue.set(selectedItemsForNgModel);
     this.onChange(selectedItemsForNgModel);
 
     this.searchInput()!.nativeElement.select();
@@ -600,6 +608,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
       value = null
     }
     this.selected.emit(value);
+    this.modelValue.set(value);
     this.onChange(value);
     this.searchInput()!.nativeElement.select();
   }
@@ -626,7 +635,9 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   }
 
   writeValue(value: any): void {
-    if (value) {
+    this.modelValue.set(value);
+
+    if (value !== null && value !== undefined && value !== '') {
       this.initialState = value;
       this.selectInitialStateValue();
     } else {
@@ -656,6 +667,7 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
 
     const selectedItemsForNgModel = this.selectedItems().map(val => val[this.value()]);
     this.selected.emit(selectedItemsForNgModel);
+    this.modelValue.set(selectedItemsForNgModel);
     this.onChange(selectedItemsForNgModel);
 
     this.isOpen.set(true);
