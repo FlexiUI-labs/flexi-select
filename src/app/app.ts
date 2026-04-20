@@ -9,78 +9,34 @@ import { FormsModule, NgForm } from '@angular/forms';
   imports: [FlexiSelectModule, FormsModule],
   template: `
     <div style="width: 400px; margin:30px">
+      <h1>Name is {{name()}}</h1>
       <form #myForm="ngForm" (ngSubmit)="send(myForm)">
-        <!-- <flexi-select
-        language="tr"
-        [data]="data()"
-        [(ngModel)]="city"
-        name="city"
-        label="fullName"
-        [multiple]="false"
-        value="id"
-        [disabled]="false"
-        themeClass="light"
-        [required]="true"
-        [showValidationErrors]="true"
-        [loading]="loading()"
-        (selected)="selected($event)"
-        /> -->
-      <flexi-select 
-      [data]="names()"
-      (selected)="selected($event)"
+      <flexi-select
+      [data]="data()"
       [required]="true"
       [showValidationErrors]="true"
       [(ngModel)]="name"
       name="test"
+      label="name"
+      value="name"
       fontSize="14px"
       [loading]="false"
       language="tr"
       />
       <button style="margin-top: 20px;">Submit</button>
       </form>
-        <!-- <flexi-select
-        language="tr"
-        [data]="data()"
-        label="fullName"
-        value="id"
-        themeClass="light"
-        />
-        <flexi-select
-        language="tr"
-        [data]="data()"
-        label="fullName"
-        value="id"
-        />
-        <flexi-select
-        language="tr"
-        [data]="data()"
-        label="fullName"
-        value="id"
-        /> -->
     </div>
   `
 })
 export class App {
-  readonly result = httpResource<any[]>(() => "/data.json");
+  readonly result = httpResource<any[]>(() => "https://jsonplaceholder.typicode.com/users");
 
   readonly data = computed(() => this.result.value() ?? []);
   readonly loading = computed(() => this.result.isLoading());
-
-  readonly names = signal<string[]>(["Taner","Tugay","Toprak"]);
   readonly name = signal<string>("");
   readonly city = signal<string>("");
 
   send(form:NgForm){
-    console.log(form);
-    console.log("name: " + this.name());
-    console.log("city " + this.city());
-    
-    
-    
-  }
-
-  selected(data:any){
-    console.log(data);
-    
+    this.result.reload();
   }
 }
