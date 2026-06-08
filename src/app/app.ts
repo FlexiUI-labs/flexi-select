@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { FlexiSelectModule } from '../../library/src/lib/flexi-select.module'
 import { httpResource } from '@angular/common/http';
@@ -7,6 +7,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 @Component({
   selector: 'app-root',
   imports: [FlexiSelectModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <div style="width: 400px; margin:30px">
       <h1>Name is {{name()}}</h1>
