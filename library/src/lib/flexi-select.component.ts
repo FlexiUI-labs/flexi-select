@@ -89,6 +89,10 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   readonly #elementRef = inject(ElementRef);
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes["disabled"] && this.disabled()) {
+      this.isOpen.set(false);
+    }
+
     if (changes["data"] && changes["data"].currentValue) {
       this.dataSignal.set([...changes["data"].currentValue]);
       if (!this.multiple()) {
@@ -465,6 +469,8 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   }
 
   onKeyDown(event: KeyboardEvent) {
+    if (this.disabled()) return;
+
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       if (!this.isOpen()) {
@@ -614,6 +620,8 @@ export class FlexiSelectComponent implements OnChanges, OnInit {
   }
 
   select(item: any) {
+    if (this.disabled()) return;
+
     if (this.multiple()) {
       this.selectForMultiple(item);
       if (this.closeAfterSelect()) {

@@ -14,8 +14,8 @@
     <div class="flexi-select-div"
          #flexiSelectDiv
          [ngStyle]="{'height': height(), 'cursor': disabled() ? 'default' : 'pointer', fontSize: fontSize()}"
-         [tabindex]="tabindex()"
-         (keydown.space)="!disabled() && $event.preventDefault(); this.isOpen.set(true)"
+         [tabindex]="disabled() ? -1 : tabindex()"
+         (keydown.space)="!disabled() && $event.preventDefault(); !disabled() && isOpen.set(true)"
          (focus)="onFocus()"
          (blur)="onBlur()"
          [attr.aria-controls]="uniqueName() + '-listbox'"
@@ -60,6 +60,7 @@
           (input)="search()"
           (keydown)="onKeyDown($event)"
           type="search"
+          [disabled]="disabled()"
           [name]="uniqueName()"
           autocomplete="off"
           [attr.name]="uniqueName()"
